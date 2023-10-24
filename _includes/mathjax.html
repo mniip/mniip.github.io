@@ -1,0 +1,28 @@
+<script>
+    MathJax = {
+        loader: {
+            load: ["[tex]/physics", "[tex]/mathtools"]
+        },
+        tex: {
+            inlineMath: [["$", "$"], ["\\(", "\\)"]],
+            packages: {
+                "[+]": ["physics", "mathtools"]
+            }
+        },
+        chtml: {
+            matchFontHeight: false,
+            minScale: 1.1001481
+        },
+        svg: {
+            scale: 2.087491,
+            minScale: 1.1001481
+        },
+        startup: {
+            ready: function () {
+                MathJax._.core.MmlTree.MmlNodes.math.MmlMath.defaults.scriptminsize = '0px';
+                MathJax.startup.defaultReady();
+            }
+        }
+    };
+</script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

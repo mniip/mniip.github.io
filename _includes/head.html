@@ -1,0 +1,27 @@
+<head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <link rel="icon" type="image/png" href="/static/img/icon.webp" />
+
+    <link rel="stylesheet" type="text/css" href="/static/css/modern-normalize.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
+    <style>
+        {% for css in page.extra_styles %}
+            {%- include extra_styles/{{ css }}.css -%}
+        {% endfor %}
+    </style>
+
+    <title>
+        {% if page.title %}
+            {{ page.title }} |
+        {% endif %}
+        {{ site.title }}
+    </title>
+
+    {% if page.mathjax %}
+        {%- include mathjax.html -%}
+    {% endif %}
+</head>

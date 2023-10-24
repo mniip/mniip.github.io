@@ -1,9 +1,7 @@
 ---
-title: ""
+title: "About me"
 updated: 2023-10-24
 ---
-
-# About me
 
 <figure>
     <img src="/static/img/pfp.webp" alt="My profile picture, a smirking cat" />

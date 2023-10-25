@@ -18,7 +18,7 @@ author {
     font-size: 0.75em;
 }
 
-figure {
+.aside {
     float: left;
     max-width: 30%;
     margin: 0;
@@ -26,6 +26,6 @@ figure {
     padding-inline-start: 0;
 }
 
-figure img {
+.aside img {
     width: 100%;
 }

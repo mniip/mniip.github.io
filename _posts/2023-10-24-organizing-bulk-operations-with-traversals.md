@@ -8,7 +8,7 @@ Suppose, in Haskell pseudocode, you have some process:
 ```hs
 process :: A -> IO B
 ```
-where `A` and `B` are arbitary types. And suppose the implementation of the process is such that it is more efficient to do in bulk: you would provide several `A`'s upfront and would receive several `B`'s.
+where `A` and `B` are arbitrary types. And suppose the implementation of the process is such that it is more efficient to do in bulk: you would provide several `A`'s upfront and would receive several `B`'s.
 
 The question is, what type should you give to `processBulk`, the *bulk* version of `process`?
 
@@ -26,7 +26,7 @@ process a = processBulk [a] <&> \case
   _ -> error "???"
 ```
 
-Perhaps `processBulk` is an internal function and you can look at what its use sites are. Some use sites might need to convert to one of the three aforementioned types anyway, and these conversions are fragile and error-prone, so you why not hide it under the hood of `processBulk`. And if you have several use sites that require different formats you're just screwed I guess?
+Perhaps `processBulk` is an internal function and you can look at what its use sites are. Some use sites might need to convert to one of the three aforementioned types anyway, and these conversions are fragile and error-prone, so why not hide it under the hood of `processBulk`. And if you have several use sites that require different formats you're just screwed I guess?
 
 ## An Aside
 
@@ -139,7 +139,7 @@ processBulk as = do
 
 You will notice something here: in order to satisfy the type of `processBulk` we are forced to eagerly check that the expected invariant holds. This is good because in the event that `processList`/`processMap` are some sort of external interface, and that interface behaves unexpectedly --- you'd rather find out about it early, than pass it to a Rube Goldberg machine of unchecked conversions that will just unexpectedly die at a random spot.
 
-Even if your underlying interface and your use sites agree on e.g. using lists, and they don't break terribly if the invariant is violated so you think you can afford not to check --- even then I argue it is at least a good code organization measure. You have a type that clearly indicates intent: give me any structure with `A`'s and I'll fill it with `B`'s instead. You have a clear separation of responsibilities: it is `processBulk`'s job to validate the invariant. You have a flexible building block that can be easily repurposed in case the use sites change how the want to see the data.
+Even if your underlying interface and your use sites agree on e.g. using lists, and they don't break terribly if the invariant is violated so you think you can afford not to check --- even then I argue it is at least a good code organization measure. You have a type that clearly indicates intent: give me any structure with `A`'s and I'll fill it with `B`'s instead. You have a clear separation of responsibilities: it is `processBulk`'s job to validate the invariant. You have a flexible building block that can be easily repurposed in case the use sites change how they want to see the data.
 
 I don't believe I am the first to discover this idea, at least I've been informed that @phadej [was writing](https://oleg.fi/gists/posts/2023-10-12-use-traversals-for-batch-operations.html) about essentially the same thing. Still, other than that I don't think I've seen another Haskell programmer talk about this technique, and I've definitely seen a lot of "bad" versions of `processBulk`.
 

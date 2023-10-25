@@ -141,6 +141,8 @@ You will notice something here: in order to satisfy the type of `processBulk` we
 
 Even if your underlying interface and your use sites agree on e.g. using lists, and they don't break terribly if the invariant is violated so you think you can afford not to check --- even then I argue it is at least a good code organization measure. You have a type that clearly indicates intent: give me any structure with `A`'s and I'll fill it with `B`'s instead. You have a clear separation of responsibilities: it is `processBulk`'s job to validate the invariant. You have a flexible building block that can be easily repurposed in case the use sites change how the want to see the data.
 
+I don't believe I am the first to discover this idea, at least I've been informed that @phadej [was writing](https://oleg.fi/gists/posts/2023-10-12-use-traversals-for-batch-operations.html) about essentially the same thing. Still, other than that I don't think I've seen another Haskell programmer talk about this technique, and I've definitely seen a lot of "bad" versions of `processBulk`.
+
 ## Appendix: Lens
 
 It is possible to further generalize by abstracting out the type of `traverse`:

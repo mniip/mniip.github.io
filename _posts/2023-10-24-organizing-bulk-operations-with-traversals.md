@@ -11,6 +11,7 @@ process :: A -> IO B
 where `A` and `B` are arbitrary types. And suppose the implementation of the process is such that it is more efficient to do in bulk: you would provide several `A`'s upfront and would receive several `B`'s.
 
 The question is, what type should you give to `processBulk`, the *bulk* version of `process`?
+<!-- more -->
 
 A lot of the time the need for such bulk operations arises because you're interacting with another system, crossing some sort of expensive API boundary. You could be talking to an SQL database, or a REST API if it has been thoughtfully extended with bulk endpoints. This API has its own signature, if not exactly a "type" then at least a pattern of how data flows in and out. It may be tempting to provide a thin wrapper around this pattern, and it's common to see types like:
 

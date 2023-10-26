@@ -2,6 +2,7 @@ title: mniip.com
 domain: mniip.com
 url: "https://mniip.com/"
 baseurl: ""
+author: mniip
 
 markdown: kramdown
 locale: en_US
@@ -11,10 +12,14 @@ defaults:
       path: ""
     values:
       layout: default
+      excerpt_separator: "<!-- more -->"
 
 collections:
   posts:
     output: true
     permalink: /:collection/:name
 
-plugins: []
+feed: {}
+
+plugins:
+  - jekyll-feed

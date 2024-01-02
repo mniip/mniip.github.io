@@ -70,7 +70,7 @@ we see that we've actually made up a binary operation that is:
 - *associative*: `join s (join u v) = join (join s u) v`,
 - and *idempotent*: `join s s = s`.
 
-For `[]`, whose shapes are indentified with natural numbers, this is the operation of taking the maximum of two numbers. For `Map k`, it is the operation of taking the union of two sets.
+For `[]`, whose shapes are identified with natural numbers, this is the operation of taking the maximum of two numbers. For `Map k`, it is the operation of taking the union of two sets.
 
 What's left is figuring out what happens to the elements. We've combined a container of shape `s` with `length s` elements and a container of shape `u` with `length u` elements, to obtain a container of shape `join s u` with `length (join s u)` elements. So how are the input elements related to the output elements? Parametricity forbids us from actually changing the element values, so we are restricted to talking about *locations* of the elements.
 
@@ -223,7 +223,7 @@ zip :: t a -> t b -> t (a, b)
 ```
 Restriction may however drop input elements. But it does preserve order:
 ```hs
-toList xs `isSubsetOf` toList (zip xs ys)
+toList (zip xs ys) `isSubsequenceOf` toList xs
 ```
 
 Restriction has compatibility laws with `zip`:

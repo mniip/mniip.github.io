@@ -69,6 +69,7 @@ we see that we've actually made up a binary operation that is:
 - *commutative*: `join s u = join u s`,
 - *associative*: `join s (join u v) = join (join s u) v`,
 - and *idempotent*: `join s s = s`.
+
 For `[]`, whose shapes are indentified with natural numbers, this is the operation of taking the maximum of two numbers. For `Map k`, it is the operation of taking the union of two sets.
 
 What's left is figuring out what happens to the elements. We've combined a container of shape `s` with `length s` elements and a container of shape `u` with `length u` elements, to obtain a container of shape `join s u` with `length (join s u)` elements. So how are the input elements related to the output elements? Parametricity forbids us from actually changing the element values, so we are restricted to talking about *locations* of the elements.
@@ -101,7 +102,11 @@ align xs nil = This <$> xs
 ```
 A way to enforce this using types is to say that actually `nil :: t Void`, and then `align xs nil :: t (These a Void)`, and `These a Void` is forced to be the `This` constructor. This implies that `nil` has no elements (`length nil = 0`).
 
-The `semialign` library uses `nil :: forall a. t a`, which is equivalent.
+The `semialign` library uses an equivalent formulation:
+```hs
+class Semialign t => Align t where
+  nil :: t a
+```
 
 The left unit laws (`join nil ys = ys`, `align nil ys = That <$> ys`) follow from commutativity of `align`.
 
@@ -123,7 +128,7 @@ On shapes, `<=` is a relation and doesn't carry any data. With elements, we see 
 - An expansion map `Vector (length s) a -> Vector (length u) (Maybe a)` that doesn't drop or duplicate elements, but may skip over some locations in the output (filling them with `Nothing`).
 - A restriction map `Vector (length u) a -> Vector (length s) a` that doesn't duplicate elements or skip over locations, but may drop elements.
 
-In terms of the container type `t`, could assign them types like:
+In terms of the container type `t`, we could assign them types like:
 ```hs
 expansion :: Shape t -> t a -> Maybe (t (Maybe a))
 restriction :: Shape t -> t a -> Maybe (t a)
@@ -182,7 +187,7 @@ if expansion s xs = Just ys then:
   align s xs = maybe (This ()) (These ()) <$> ys
 ```
 
-<details><summary>Nested aside</summary>
+<details><summary>Nested aside: restriction</summary>
 <code>Semialign</code> only captures the expansion part of the relation. To capture the restriction part too, we would need to change the type of <code>align</code> to something like:
 {% highlight hs %}
 align :: t a -> t b -> (t (These a b), t (a, Maybe b), t (Maybe a, b))
@@ -193,7 +198,7 @@ align :: t a -> t b -> (t (These a b), t (a, Maybe b), t (Maybe a, b))
 
 ## Intersections
 
-Where there's a transitive relation, there's potential for duality. The opposite of a least upper bound is a *greatest lower bound*. That means for `x` and `y` there's a "lower bound" L (`x <= L` and `y <= L`) that is "greatest" (if `M <= x` and `M <= y` then `M <= L`).
+Where there's a transitive relation, there's potential for duality. The opposite of a least upper bound is a *greatest lower bound*. That means for `x` and `y` there's a "lower bound" L (`L <= x` and `L <= y`) that is "greatest" (if `M <= x` and `M <= y` then `M <= L`).
 
 Equivalently, it means there's a binary operation which we'll denote `meet` that is commutative, associative, and idempotent. How is it different from `join`? Well, it isn't really. But it has a different connection to the `<=` relation:
 ```hs
@@ -228,8 +233,8 @@ if restriction s xs = Just ys then:
   zip s xs = ((),) <$> ys
 ```
 
-<details><summary>Nested aside 2</summary>
-Dually, <code>Zip</code> doesn't capture the expansion part of the relation. We would need to modify `zip` to also return the input shapes with the intersection shape expanded into them.
+<details><summary>Nested aside 2: expansion</summary>
+Dually, <code>Zip</code> doesn't capture the expansion part of the relation. We would need to modify <code>zip</code> to also return the input shapes with the intersection shape expanded into them.
 </details>
 
 ## Distributivity
@@ -244,9 +249,9 @@ However, care must be taken with generalizing these properties from mere shapes 
 align (zip xs ys) zs :: t (These (a, b) c)
 zip (align xs zs) (align ys zs) :: t (These a c, These b c)
 ```
-Suppose there's a shape `s` such that `s <= shape xs` and `s <= shape zs`, but `not (s <= shape ys)`. Then it follows that `not (s <= shape (zip xs ys))` and `s <= shape (align (zip xs ys) zs)`. This means that elements of `xs` that can be restricted to `s` will have been dropped when zipping with `ys`, and elements of `align (zip xs ys) zs` that can be restricted to `s` will never be attributed to anything from `xs`. On the other hand, we have `s <= shape (align xs zs)`, meaning `zip (align xs zs)` retains elements of `xs` that can be restricted to `s`, and thus so does `zip (aling xs zs) (align ys zs)`.
+Suppose there's a shape `s` such that `s <= shape xs` and `s <= shape zs`, but `not (s <= shape ys)`. Then it follows that `not (s <= shape (zip xs ys))` and `s <= shape (align (zip xs ys) zs)`. This means that elements of `xs` that can be restricted to `s` will have been dropped when zipping with `ys`, and elements of `align (zip xs ys) zs` that can be restricted to `s` will never be attributed to anything from `xs`. On the other hand, we have `s <= shape (align xs zs)`, meaning `zip (align xs zs)` retains elements of `xs` that can be restricted to `s`, and thus so does `zip (align xs zs) (align ys zs)`.
 
-In general, consulting the truth table of `(X and Y) or Z`, which is equivalent to `(X or Z) and (Y or Z)`:
+In general, we can consult the truth table of `(X and Y) or Z`, which is equivalent to `(X or Z) and (Y or Z)`:
 ```
 X Y Z | (X and Y) or Z
 ------+---------------
@@ -283,7 +288,7 @@ toPairThese (AB x y) = (This x, This y)
 toPairThese (ABC x y z) = (These x z, These y z)
 ```
 
-Note the dropping and duplication of data, which doesn't let us express these as a simple function from `These (a, b) c` to `(These a c, These b c)` or the other way. Instead we have to assert that there exists some `rs :: t (ABC a b c)` such that:
+Note the dropping and duplication of data, which doesn't let us express these as a simple function from `These (a, b) c` to `(These a c, These b c)` or the other way. Instead we have to assert that there exists some `rs :: t (AndOr a b c)` such that:
 ```hs
 align (zip xs ys) zs = toThesePair <$> rs
 zip (align xs ys) (align ys zs) = toPairThese <$> rs
@@ -294,7 +299,7 @@ The other distributive law, relating `zip (align xs ys) zs` and `align (zip xs z
 distrPairThese <$> zip (align xs ys) zs = align (zip xs zs) (zip ys zs)
 ```
 
-Distributivity actually adds a lot of rigidity into the structure of a lattice, that we can use to more easily reason about them. [Birkhoff's representation theorem](https://en.wikipedia.org/wiki/Birkhoff%27s_representation_theorem) states that every finite distributive lattice is a sublattice of the lattice of sets, under regular operations of union and intersection. This means that `t ~ Map k` is in a sense a universal example, and every other example is merely restricting `Map k` to a subset of shapes. For example, lists can be thought of as `Map Int` with the restriction that keys have to start from `0` and be consecutive.
+Distributivity actually adds a lot of rigidity into the structure of a lattice, that we can use to more easily reason about them. [Birkhoff's representation theorem](https://en.wikipedia.org/wiki/Birkhoff%27s_representation_theorem) states that every finite distributive lattice is a sublattice of the lattice of sets, under regular operations of union and intersection. This means that `t ~ Map k` is in a sense a universal example, and every other example is merely restricting `Map k` to a subset of shapes. For example, lists can be thought of as `Map Natural` with the restriction that keys have to start from `0` and be consecutive.
 
 Equivalently, every distributive lattice is a sublattice of the product of some copies of the two-element lattice, which corresponds to `t ~ Maybe`. This means that a container type can be "factored" into individual locations, each of which can be filled with an element or not, and the "names" of these locations can be consistent between the different shapes of the container. For example, "3rd element of the list" is a location that makes sense for all lists, but in some lists it's merely not filled with an element.
 
@@ -343,7 +348,7 @@ pairN :: Applicative f => (f a1, f a2, ... , f an) -> f (a1, a2, ..., an)
 pairN (xs1, xs2, ... , xsn) = liftAN (,, ... ,,) xs1 xs2 ... xsn
 ```
 
-Let's consider `Semialign` on the other hand. If we apply `align` twice to combine 3 containers, we end up with a type of elements like `These a (These b c)`. If we enumerate the possibilities, this type encodes a non-empty sub-tuple of `(a, b, c)`. In general, applying `align` N-1 times to combine N containers will yield a container with some nesting of `These` that encodes a non-empty sub-tuple of N types:
+Let's consider `Semialign` on the other hand. If we apply `align` twice to combine 3 containers, we end up with a type of elements like `These a (These b c)`. If we enumerate the possibilities, we can see that this type encodes a non-empty sub-tuple of `(a, b, c)`. In general, applying `align` multiple times to combine N containers will yield a container with some nesting of `These` that encodes a non-empty sub-tuple of N types:
 ```hs
 theseN
   :: Align f

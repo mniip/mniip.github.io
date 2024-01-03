@@ -28,7 +28,7 @@ In a dependently typed language we could precisely encode this invariant with a 
 ```hs
 type Decomposition t a = { shape :: Shape t | Vector (length shape) a }
 ```
-In fancy math terms, we have a *fibration* `shape :: t a -> Shape t`, whose *total space* is `t a`, and its *base space* is `Shape t`. Given a specific shape `s :: Shape t`, we have the *fiber over `s`*: a subset of exactly those elements of `t a` that have shape `s`. As the above decomposition shows, this fiber is isomorphic to `Vector (length s) a`, i.e. a product of exactly `length s` copies of `a`.
+In fancy math terms, we have a *fibration* `shape :: t a -> Shape t`, whose *total space* is `t a`, and its *base space* is `Shape t`. Given a specific shape `s :: Shape t`, we have the *fiber over `s`*: a set of values of type `t a` that have shape `s`. As the above decomposition shows, this fiber is isomorphic to `Vector (length s) a`, i.e. a product of exactly `length s` copies of `a`.
 
 Examples:
 - If `t ~ []`, we have `Shape []` isomorphic to `Natural` --- the shape of a list is uniquely determined by its length.

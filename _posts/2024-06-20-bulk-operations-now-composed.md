@@ -117,7 +117,7 @@ We may note that they're not actually arbitrary structures, as each operation he
 
 We're going to get `productDatasByOrderID` to do the zipping for us, and we're going to do it by passing `OrderData` through it, and we're going to do it for free, *without changing `productDatasByOrderID`*.
 
-The trick is tuck `OrderData` into the `t`. Just like we represented `t [X]` as `Compose t [] X`, we can represent `t (X, Y)` as `Compose ((,) X) Y`:
+The trick is to tuck `OrderData` into the `t`. Just like we represented `t [X]` as `Compose t [] X`, we can represent `t (X, Y)` as `Compose ((,) X) Y`:
 ```hs
 fmap getCompose
   . productDatasByOrderID

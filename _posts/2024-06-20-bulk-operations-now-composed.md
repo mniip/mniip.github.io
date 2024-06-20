@@ -65,12 +65,19 @@ productDatasByOrderID = ???
 
 How do we compose the two functions? We can start with `productIDsByOrderID >=> ???` but then the resulting `???` has expected type `t [ProductID] -> IO (t [ProductData])`, which is not what we've got.
 
-What we *can* do is use `productDataByID` at type `Compose t []`. Its type then becomes:
+Note that the choice of `t` we make when calling `productDataByID` doesn't have to match the `t` we're given as implementors of `productDatasByOrderID`. Instead what we can do is use `productDataByID` at type `Compose t []`:
 ```hs
 productDataByID @(Compose t [])
   :: Compose t [] ProductID -> IO (Compose t [] ProductData)
 ```
-With some newtype wrapping/unwrapping we can complete the puzzle:
+With some newtype wrapping/unwrapping, we get:
+```hs
+fmap getCompose
+  . productDataByID
+  . Compose @t @[]
+  :: t [ProductID] -> IO (t [ProductData])
+```
+i.e. exactly what we want. Putting the puzzle pieces together, we can implement the function:
 ```hs
 productDatasByOrderID
   :: Traversable t => t OrderID -> IO (t [ProductData])
@@ -110,13 +117,7 @@ We may note that they're not actually arbitrary structures, as each operation he
 
 We're going to get `productDatasByOrderID` to do the zipping for us, and we're going to do it by passing `OrderData` through it, and we're going to do it for free, *without changing `productDatasByOrderID`*.
 
-The trick is tuck `OrderData` into the `t`. We can do it like so:
-```hs
-productDatasByOrderID @(Compose t ((,) OrderData))
-  :: Compose t ((,) OrderData) OrderID
-  -> IO (Compose t ((,) OrderData) [ProductData])
-```
-which after newtype-unwrapping becomes:
+The trick is tuck `OrderData` into the `t`. Just like we represented `t [X]` as `Compose t [] X`, we can represent `t (X, Y)` as `Compose ((,) X) Y`:
 ```hs
 fmap getCompose
   . productDatasByOrderID

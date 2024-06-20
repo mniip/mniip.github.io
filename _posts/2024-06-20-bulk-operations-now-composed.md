@@ -241,7 +241,7 @@ class Profunctor (p :: Type -> Type -> Type) where
   dimap :: (x -> y) -> (z -> w) -> p y z -> p x w
 
 instance Profunctor p => Profunctor (Bulk p) where
-  dimap f g (Bulk h) = Bulk (dmap (fmap f) (fmap g) h)
+  dimap f g (Bulk h) = Bulk (dimap (fmap f) (fmap g) h)
 ```
 
 ## Another Take at Nesting

@@ -24,10 +24,10 @@ This type describes an invariant, that the `B`'s returned are in a one-to-one co
 Throughout this post we'll use a running example of orchestrating bulk select queries to a database with the following toy schema:
 ```
 ┌─────┐               ┌──────┐               ┌────────┐
-│Users│──[1 to 0..*]──│Orders│──[1 to 0..*]──│Products│
+│Users│──[1-to-many]──│Orders│──[1-to-many]──│Products│
 └─────┘               └──────┘               └────────┘
                          │              ┌────────┐
-                         └─[1 to 0..*]──│Payments│
+                         └─[1-to-many]──│Payments│
                                         └────────┘
 ```
 

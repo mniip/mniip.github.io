@@ -2,11 +2,21 @@ body {
     margin: auto;
     padding: 1em;
     max-width: 800px;
+    font-size: 1em;
     line-height: 1.4;
     text-align: justify;
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
+}
+
+pre {
+    line-height: 1;
+    overflow-x: auto;
+}
+
+code {
+    font-family: monospace;
 }
 
 h1, h2, h3, h4, h5, h6 {

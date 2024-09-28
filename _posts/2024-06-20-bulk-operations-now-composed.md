@@ -1,5 +1,6 @@
 ---
 title: Bulk Operations with Traversals, Now Composed
+comments: true
 ---
 
 * TOC

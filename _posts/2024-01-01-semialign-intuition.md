@@ -1,5 +1,6 @@
 ---
 title: From Semialign to Crosswalk
+comments: true
 ---
 
 * TOC

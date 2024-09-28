@@ -1,5 +1,6 @@
 ---
 title: Organizing Bulk Operations with Traversals
+comments: true
 ---
 
 ## The Problem

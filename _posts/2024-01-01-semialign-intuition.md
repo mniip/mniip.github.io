@@ -257,18 +257,18 @@ zip (align xs zs) (align ys zs) :: t (These a c, These b c)
 Suppose there's a shape `s` such that `s <= shape xs` and `s <= shape zs`, but `not (s <= shape ys)`. Then it follows that `not (s <= shape (zip xs ys))` and `s <= shape (align (zip xs ys) zs)`. This means that elements of `xs` that can be restricted to `s` will have been dropped when zipping with `ys`, and elements of `align (zip xs ys) zs` that can be restricted to `s` will never be attributed to anything from `xs`. On the other hand, we have `s <= shape (align xs zs)`, meaning `zip (align xs zs)` retains elements of `xs` that can be restricted to `s`, and thus so does `zip (align xs zs) (align ys zs)`.
 
 In general, we can consult the truth table of `(X and Y) or Z`, which is equivalent to `(X or Z) and (Y or Z)`:
-```
-X Y Z | (X and Y) or Z
-------+---------------
-0 0 0 | 0
-0 0 1 | 1
-0 1 0 | 0
-0 1 1 | 1
-1 0 0 | 0
-1 0 1 | 1
-1 1 0 | 1
-1 1 1 | 1
-```
+
+| `X` || `Y` || `Z` || `(X and Y) or Z` |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-------------:|
+| 0   || 0   || 0   || 0                |
+| 0   || 0   || 1   || 1                |
+| 0   || 1   || 0   || 0                |
+| 0   || 1   || 1   || 1                |
+| 1   || 0   || 0   || 0                |
+| 1   || 0   || 1   || 1                |
+| 1   || 1   || 0   || 1                |
+| 1   || 1   || 1   || 1                |
+
 The `1` entries correspond to presence of elements, and `0`s correspond to absence. Thus the most general type of element that we can use for the result of combining 3 containers this way is a datatype with 5 constructors, which can be mapped to `These (a, b) c` and `(These a c, These b c)`:
 ```hs
 data AndOr a b c

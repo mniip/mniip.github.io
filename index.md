@@ -3,9 +3,7 @@ title: "About me"
 updated: 2023-10-24
 ---
 
-<figure class="aside">
-    <img src="/static/img/pfp.webp" alt="My profile picture, a smirking cat" />
-</figure>
+<img class="aside" src="/static/img/pfp.webp" alt="My profile picture, a smirking cat" />
 
 I use the username <em>mniip</em> on most platforms, pronounced /mni&#x02D0;p/.
 

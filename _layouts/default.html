@@ -9,14 +9,14 @@
                 <h1>{{ page.title }}</h1>
             {% endif %}
             {% if page.date or page.updated %}
-                <author>
+                <small>
                     {% if page.date %}
                         Created: <time datetime="{{ page.date }}">{{ page.date | date: "%B %-d, %Y" }}</time>.
                     {% endif %}
                     {% if page.updated %}
                         Updated: <time datetime="{{ page.updated }}">{{ page.updated | date: "%B %-d, %Y" }}</time>.
                     {% endif %}
-                </author>
+                </small>
             {% endif %}
             {{ content }}
         </main>
@@ -27,7 +27,7 @@
                 repo="mniip/mniip.github.io"
                 issue-term="pathname"
                 label="comments"
-                theme="github-light"
+                theme="preferred-color-scheme"
                 crossorigin="anonymous"
                 async>
             </script>

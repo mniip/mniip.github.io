@@ -19,7 +19,5 @@ collections:
     output: true
     permalink: /:collection/:name
 
-feed: {}
-
 plugins:
   - jekyll-feed

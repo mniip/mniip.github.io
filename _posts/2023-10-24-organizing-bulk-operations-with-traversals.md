@@ -114,8 +114,9 @@ processBulk as = do
   pure $ tagged <&> \(nonce, _) -> m Map.! nonce
 ```
 
-<details><summary>Precise exceptions versions:</summary>
-{% highlight hs %}
+<details markdown="1"><summary>Precise exceptions versions:</summary>
+
+```hs
 processBulk :: Traversable t => t A -> IO (t B)
 processBulk as = processList (toList as) >>= \bs ->
   runStateT (traverse (StateT . go) as) bs >>= \case
@@ -125,8 +126,8 @@ processBulk as = processList (toList as) >>= \bs ->
     go :: A -> [B] -> IO (B, [B])
     go _ (b:bs) = pure (b, bs)
     go _ [] = fail "processList returned too few items"
-{% endhighlight %}
-{% highlight hs %}
+```
+```hs
 processBulk :: Traversable t => t A -> IO (t B)
 processBulk as = do
   tagged <- for as \a -> do
@@ -136,7 +137,8 @@ processBulk as = do
   for tagged \(nonce, _) -> case Map.lookup nonce m of
     Just b -> pure b
     Nothing -> fail "processMap didn't return a key we've given it"
-{% endhighlight %}
+```
+
 </details>
 
 You will notice something here: in order to satisfy the type of `processBulk` we are forced to eagerly check that the expected invariant holds. This is good because in the event that `processList`/`processMap` are some sort of external interface, and that interface behaves unexpectedly --- you'd rather find out about it early, than pass it to a Rube Goldberg machine of unchecked conversions that will just unexpectedly die at a random spot.

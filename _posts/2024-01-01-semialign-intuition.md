@@ -148,8 +148,9 @@ Here's a diagram demonstrating these, given `s = Set.fromList ['a']` and `u = Se
     <img src="/static/img/semialign-intuition/exchange_map_diagram.svg" alt="A diagram demonstrating the attribution of locations when expanding or restricting a map" />
 </figure>
 
-<details><summary>Here's a better attempt:</summary>
-{% highlight hs %}
+<details markdown="1"><summary>Here's a better attempt:</summary>
+
+```hs
 class (Functor t, Foldable t) => PartiallyOrdered t where
   exchange :: (t a, t b) -> Maybe (t (b, Maybe a), t (a, b))
   -- If exchange (xs, ys) = Just (xs', ys') then:
@@ -178,7 +179,8 @@ restriction :: PartiallyOrdered t => Shape t -> t a -> Maybe (t a)
 restriction s xs = exchange (s, xs) <&> \(_, xs') -> snd <$> xs'
 -- corollary: restriction (shape xs) xs = Just xs
 -- corollary: restriction s xs >>= restriction u = restriction u xs
-{% endhighlight %}
+```
+
 </details>
 
 This superclass should have a compatibility law with `Semialign`:
@@ -188,13 +190,15 @@ if expansion s xs = Just ys then:
   align s xs = maybe (This ()) (These ()) <$> ys
 ```
 
-<details><summary>Nested aside: restriction</summary>
-<code>Semialign</code> only captures the expansion part of the relation. To capture the restriction part too, we would need to change the type of <code>align</code> to something like:
-{% highlight hs %}
+<details markdown="1"><summary>Nested aside: restriction</summary>
+`Semialign` only captures the expansion part of the relation. To capture the restriction part too, we would need to change the type of `align` to something like:
+
+```hs
 align :: t a -> t b -> (t (These a b), t (a, Maybe b), t (Maybe a, b))
 -- expand the two inputs to the union shape, but also restrict the union shape
 -- to the two shapes of the inputs
-{% endhighlight %}
+```
+
 </details>
 
 ## Intersections
@@ -234,8 +238,8 @@ if restriction s xs = Just ys then:
   zip s xs = ((),) <$> ys
 ```
 
-<details><summary>Nested aside 2: expansion</summary>
-Dually, <code>Zip</code> doesn't capture the expansion part of the relation. We would need to modify <code>zip</code> to also return the input shapes with the intersection shape expanded into them.
+<details markdown="1"><summary>Nested aside 2: expansion</summary>
+Dually, `Zip` doesn't capture the expansion part of the relation. We would need to modify `zip` to also return the input shapes with the intersection shape expanded into them.
 </details>
 
 ## Distributivity
@@ -304,19 +308,21 @@ Distributivity actually adds a lot of rigidity into the structure of a lattice, 
 
 Equivalently, every distributive lattice is a sublattice of the product of some copies of the two-element lattice, which corresponds to `t ~ Maybe`. This means that a container type can be "factored" into individual locations, each of which can be filled with an element or not, and the "names" of these locations can be consistent between the different shapes of the container. For example, "3rd element of the list" is a location that makes sense for all lists, but in some lists it's merely not filled with an element.
 
-<details><summary>Caveat: the factors need not have exactly 1 element</summary>
-Birkhoff's representation theorem technically talks about join-irreducible elements of the lattice, which for containers means a shape that is not the union of non-<code>nil</code> shapes. This leads to the following couple of pathological examples:
+<details markdown="1"><summary>Caveat: the factors need not have exactly 1 element</summary>
+Birkhoff's representation theorem technically talks about join-irreducible elements of the lattice, which for containers means a shape that is not the union of non-`nil` shapes. This leads to the following couple of pathological examples:
 
-{% highlight hs %}
+
+```hs
 instance Semialign (Const Bool) where align (Const x) (Const y) = Const (x || y)
 instance Zip (Const Bool) where zip (Const x) (Const y) = Const (x && y)
 
 data Maybe2 a = Just2 a a | Nothing2
 instance Semialign Maybe2 -- self-evident
 instance Zip Maybe2 -- self-evident
-{% endhighlight %}
+```
 
-The lattice of shapes in both cases is isomorphic to the two-element lattice, but in the first case the join-irreducible lattice element is <code>Const True</code>, which has no elements; and in the second case the join-irreducible lattice element is <code>Just2</code>, which has 2 elements.
+
+The lattice of shapes in both cases is isomorphic to the two-element lattice, but in the first case the join-irreducible lattice element is `Const True`, which has no elements; and in the second case the join-irreducible lattice element is `Just2`, which has 2 elements.
 </details>
 
 ## Full
@@ -376,8 +382,9 @@ The prototypical examples of a `Crosswalk` are:
 - `t ~ []`: if the list is empty we return `nil`, otherwise we behave just as in the case of `NonEmpty`.
 - `t ~ Map k`: we select which locations (keys) to retain, and which to remove.
 
-<details><summary><code>semialign</code> doesn't provide instances for <code>NonEmpty</code> and <code>Map k</code> so here they are</summary>
-{% highlight hs %}
+<details markdown="1"><summary>`semialign` doesn't provide instances for `NonEmpty` and `Map k` so here they are</summary>
+
+```hs
 instance Crosswalk NonEmpty where
   crosswalk f (x NonEmpty.:| []) = NonEmpty.singleton <$> f x
   crosswalk f (x NonEmpty.:| y:zs)
@@ -399,7 +406,8 @@ instance Crosswalk (Map k) where
       assemble (This (These l' v')) = Map.insertMax k v' l'
       assemble (These (This l') r') = Map.glue l' r'
       assemble (These (These l' v') r') = Map.link k v' l' r'
-{% endhighlight %}
+```
+
 </details>
 
 More generally, `sequenceL` can be thought of as a generalized `transpose`, but not the kind that you get by traversing with a `ZipList`, but rather [the one from Data.List](https://hackage.haskell.org/package/base-4.19.0.0/docs/Data-List.html#v:transpose), which can deal with lists of uneven length by skipping over holes.

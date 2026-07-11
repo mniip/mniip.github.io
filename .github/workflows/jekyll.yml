@@ -14,9 +14,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "26"
           cache: "npm"
-      - run: npm ci
+          cache-dependency-path: ./_syntax-highlight/package-lock.json
+      - working-directory: ./_syntax-highlight
+        run: npm ci
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"

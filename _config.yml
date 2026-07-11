@@ -7,6 +7,9 @@ author: mniip
 markdown: kramdown
 locale: en_US
 
+kramdown:
+  syntax_highlighter: none
+
 defaults:
   - scope:
       path: ""

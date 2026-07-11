@@ -1,0 +1,9 @@
+{
+  "name": "starry-night-highlighter",
+  "version": "0",
+  "private": true,
+  "dependencies": {
+    "@wooorm/starry-night": "^3.10.0",
+    "hast-util-to-html": "^9.0.5"
+  }
+}
